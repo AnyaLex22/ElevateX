@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Progress Tracking</title>
+        <link rel="stylesheet" href="../css/dashboard.css">
+    </head>
+    <body>
+        <div class="container">
+            <!--SIDEBAR-->
+            <aside class="sidebar">
+                <h2>🏋️ Elevate X</h2>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="progress.html">Progress</a></li>
+                    <li><a href=" " class="active">Articles</a></li>
+                    <li><a href="profile.html">Profile Management</a></li>
+                    <li class="logout-item" onclick="logout()">Logout</li>
+                </ul>
+            </aside>
+            
+            <!--MAIN CONTENT-->
+            <main class="main">
+                <h1 style="text-align:center;">📰 Health Articles</h1>
+
+                <div class="filters" style="text-align: center;">
+                    <button onclick="loadArticles('mental health')" class="article-btn">Mental Health</button>
+                    <button onclick="loadArticles('fitness')" class="article-btn">Fitness</button>
+                    <button onclick="loadArticles('nutrition')" class="article-btn">Nutrition</button>
+                    <button onclick="loadArticles('stress')" class="article-btn">Stress</button>
+                    <button onclick="loadArticles('weight loss')" class="article-btn">Weight Loss</button>
+                    <button onclick="loadArticles('productivity')" class="article-btn">Productivity</button>
+                    <button onclick="loadArticles('sleep')" class="article-btn">Sleep</button>
+                </div><br><br>
+
+                <div id="articlesList" class="articles-grid"></div>
+            </main>
+        </div>
+    </body>
+
+    <script src="../js/articles.js"></script>
+
+</html>

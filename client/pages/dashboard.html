@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="../css/dashboard.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+
+        <div class="container">
+
+            <!--SIDEBAR-->
+            <aside class="sidebar">
+                <h2>🏋️ Elevate X</h2>
+                <ul>
+                    <li><a href=" " class="active">Dashboard</a></li>
+                    <li><a href="progress.html">Progress</a></li>
+                    <li><a href="articles.html">Articles</a></li>
+                    <li><a href="profile.html">Profile Management</a></li>
+                    <li class="logout-item" onclick="logout()">Logout</li>
+                </ul>
+            </aside>
+
+            <!--MAIN CONTENT-->
+            <main class="main">
+                <h1>📊 Dashboard</h1>
+                </b><p id="greeting" class="greeting-text"></p><br>
+
+                <!--STATS-->
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-icon">⚖️</div>
+                        <h3>Weight</h3>
+                        <p id="weightStat" class="stat-value">--</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🔥</div>
+                        <h3>Calories Average</h3>
+                        <p id="caloriesStat" class="stat-value">--</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🏃</div>
+                        <h3>Total Workouts</h3>
+                        <p id="workoutStat" class="stat-value">--</p>
+                    </div>
+                
+
+                    <!--STREAKS-->
+                    <div class="card streak-card">
+                        <div class="card-icon">🔥</div>
+                        <h3>Check-in Streak</h3>
+                        <p class="stat-value" id="streakCount">-- days</p>
+                        <button class="checkin-btn" id="checkinBtn" onclick="handleCheckin()">Check In Today</button>
+
+                        <p id="streakMsg" class="streak-msg"></p>
+                    </div>
+                </div>
+
+                <!--DAILY TASKS-->
+                <section class="tasks-section">
+                    <h2 class="section-title">✅Today's Tasks</h2>
+                    <p class="section-sub">Complete your daily habits. Resets every midnight.</p>
+
+                    <div class="tasks-grid">
+                        <!--WORKOUT TASK-->
+                        <div class="task-card" id="task-workout">
+                            <div class="task-header">
+                                <span class="task-icon">🏋️</span>
+                                <div>
+                                    <h4>Workout</h4>
+                                    <p>10 - 15 minutes of execise</p>
+                                </div>
+                                <span class="task-badge" id="badge-workout">Pending</span>
+                            </div>
+                            <div class="task-actions">
+                                <p class="task-q">Did you complete your workout today?</p>
+                                <div class="task-buttons">
+                                    <button class="task-btn yes" onclick="completeTask('workout', true)">✓ Yes</button>
+                                    <button class="task-btn no" onclick="completeTask('workout', false)">✗ No</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--WATER INTAKE TASK-->
+                        <div class="task-card" id="task-water">
+                            <div class="task-header">
+                                <span class="task-icon">💧</span>
+                                <div>
+                                    <h4>Water Intake</h4>
+                                    <p>Goal: Stay hydrated with at least 2.7 - 3.7 litres of water</p>
+                                </div>
+                                <span class="task-badge" id="badge-water">Pending</span>
+                            </div>
+                            <div class="task-actions">
+                                <p class="task-q">How many glasses of water did you drink today?</p>
+                                <div class="water-input-row">
+                                    <input type="number" id="waterCount" min="0" max="20" placeholder="0" />
+                                    <button class="task-btn yes" onclick="completeTask('water', null)">Log</button>
+                                </div>
+                                <div class="water-progress-wrap">
+                                    <div class="water-bar">
+                                        <div class="water-fill" id="waterFill"></div>
+                                    </div>
+                                    <p id="waterLabel" class="water-label">0 / 8</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--MINDFULNESS TASK-->
+                        <div class="task-card" id="task-mindfulness">
+                            <div class="task-header">
+                                <span class="task-icon">🧘</span>
+                                <div>
+                                    <h4>Mindfulness</h4>
+                                    <p>5 - 10 minutes with yourself</p>
+                                </div>
+                                <span class="task-badge" id="badge-mindfulness">Pending</span>
+                            </div>
+                            <div class="task-actions">
+                                <p class="task-q">Haave you had quiet time with yourself today?</p>
+                                <div class="task-buttons">
+                                    <button class="task-btn yes" onclick="completeTask('mindfulness', true)">✓ Yes</button>
+                                    <button class="task-btn no" onclick="completeTask('mindfulness', false)">✗ No</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!--CHARTS-->
+                <section class="charts-section">
+                    <h2 class="section-title">📈 Progress Charts</h2>
+                    <div class="charts">
+                        <div class="chart-box">
+                            <h3>Weight Over Time</h3>
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h3>Calories Burned</h3>
+                            <canvas id="caloriesChart"></canvas>
+                        </div>
+                        <div class="chart-box chart-pie">
+                            <h3>Workout Distribution</h3>
+                            <canvas id="workoutChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+                
+            </main>
+        </div>
+
+        <script src="../js/dashboard.js"></script>
+
+    </body>
+</html>
