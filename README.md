@@ -1,6 +1,6 @@
-# 🏋️ Fitness & Wellness App
+# 🏋️ Elevate X
 
-A full-stack web application for tracking fitness, habits, and health progress.
+A full-stack Fitness & Wellness web application for tracking fitness, habits, and health progress.
 
 ## 🚀 Features
 - User authentication (login/register)
