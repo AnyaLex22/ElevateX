@@ -9,15 +9,18 @@
     <body>
 
         <div class="auth-container">
-            <h2>Login</h2>
-
-            <input type="email" id="email" placeholder="email@gmail.com"><br>
-            <input type="password" id="password" placeholder="Enter you password..."><br>
-            
-            <button onclick="login()">Login</button>
-
+            <h2>Welcome Back 👋</h2>
+            <p style="color:#64748b;font-size:0.85rem;margin-bottom:12px;">Log in to continue your journey.</p>
+ 
+            <input type="email" id="email" placeholder="email@gmail.com" autocomplete="email"><br>
+            <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password"><br>
+ 
+            <button id="loginBtn" onclick="login()">Login</button>
+ 
             <p>Don't have an account? <a href="register.html">Register here</a></p>
         </div>
+ 
+        <div class="toast" id="toast"></div>
 
         <script src="../js/auth.js"></script>
     </body>

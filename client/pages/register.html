@@ -9,17 +9,86 @@
     <body>
 
         <div class="auth-container">
-            <h2>Register</h2>
-
-            <input type="text" id="name" placeholder="Please enter your name..."><br>
-            <input type="email" id="email" placeholder="email@gmail.com"><br>
-            <input type="password" id="password" placeholder="Enter your pasword"><br>
-
-            <button onclick="register()">Register</button>
-
-            <p>Already have an account? <a href="login.html"> Login here</a></p>
+            <h2>Register for new account</h2>
+            <p style="color:#64748b;font-size:0.85rem;margin-bottom:12px;">Join Elevate X and start your fitness journey.</p>
+ 
+            <input type="text" id="name" placeholder="Full name" autocomplete="name"><br>
+            <div class="field-err" id="nameErr"></div>
+ 
+            <input type="email" id="email" placeholder="email@gmail.com" autocomplete="email"><br>
+            <div class="field-err" id="emailErr"></div>
+ 
+            <input type="password" id="password" placeholder="Create a password" autocomplete="new-password">
+            <ul class="password-rules" id="passwordRules">
+                <li id="rule-len">At least 8 characters</li>
+                <li id="rule-upper">At least 1 uppercase letter (A–Z)</li>
+                <li id="rule-lower">At least 1 lowercase letter (a–z)</li>
+                <li id="rule-num">At least 1 number (0–9)</li>
+                <li id="rule-special">At least 1 special character (!@#$…)</li>
+            </ul>
+ 
+            <input type="password" id="confirmPassword" placeholder="Confirm password" autocomplete="new-password"><br>
+            <div class="match-msg" id="matchMsg"></div>
+ 
+            <button id="registerBtn" onclick="register()">Register</button>
+ 
+            <p>Already have an account? <a href="login.html">Login here</a></p>
         </div>
-
+ 
+        <div class="toast" id="toast"></div>
+ 
         <script src="../js/auth.js"></script>
+        <script>
+            // ── Live password validation ──────────────────────
+            const pwdInput   = document.getElementById('password');
+            const confInput  = document.getElementById('confirmPassword');
+            const rules      = document.getElementById('passwordRules');
+            const matchMsg   = document.getElementById('matchMsg');
+ 
+            const checks = {
+                'rule-len':     v => v.length >= 8,
+                'rule-upper':   v => /[A-Z]/.test(v),
+                'rule-lower':   v => /[a-z]/.test(v),
+                'rule-num':     v => /\d/.test(v),
+                'rule-special': v => /[^A-Za-z0-9]/.test(v),
+            };
+ 
+            function updateRules(val) {
+                Object.entries(checks).forEach(([id, fn]) => {
+                    const li = document.getElementById(id);
+                    li.classList.toggle('pass', fn(val));
+                    li.classList.toggle('fail', val.length > 0 && !fn(val));
+                });
+            }
+ 
+            function allRulesPassed(val) {
+                return Object.values(checks).every(fn => fn(val));
+            }
+ 
+            pwdInput.addEventListener('focus', () => rules.classList.add('visible'));
+            pwdInput.addEventListener('blur',  () => {
+                if (!pwdInput.value) rules.classList.remove('visible');
+            });
+ 
+            pwdInput.addEventListener('input', () => {
+                updateRules(pwdInput.value);
+                checkMatch();
+            });
+ 
+            confInput.addEventListener('input', checkMatch);
+ 
+            function checkMatch() {
+                const p = pwdInput.value;
+                const c = confInput.value;
+                if (!c) { matchMsg.textContent = ''; matchMsg.className = 'match-msg'; return; }
+                if (p === c) {
+                    matchMsg.textContent = '✓ Passwords match';
+                    matchMsg.className = 'match-msg ok';
+                } else {
+                    matchMsg.textContent = '✗ Passwords do not match';
+                    matchMsg.className = 'match-msg bad';
+                }
+            }
+        </script>
     </body>
 </html>

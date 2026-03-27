@@ -5,8 +5,72 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Progress Tracking</title>
         <link rel="stylesheet" href="../css/dashboard.css">
+        <style>
+            /* ── Loading spinner for articles ── */
+            .articles-loading {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 14px;
+                padding: 60px 20px;
+                color: #64748b;
+            }
+ 
+            .spinner {
+                width: 36px;
+                height: 36px;
+                border: 3px solid #e2e8f0;
+                border-top-color: #38bdf8;
+                border-radius: 50%;
+                animation: spin 0.7s linear infinite;
+            }
+ 
+            @keyframes spin { to { transform: rotate(360deg); } }
+ 
+            /* ── Empty state ── */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+            }
+ 
+            .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+ 
+            .empty-state h3 {
+                font-family: 'Syne', sans-serif;
+                font-size: 1.1rem;
+                color: #64748b;
+                margin-bottom: 8px;
+            }
+ 
+            .empty-state p { font-size: 0.88rem; color: #94a3b8; }
+ 
+            /* ── Toast ── */
+            .toast {
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: #1e293b;
+                color: #fff;
+                padding: 12px 24px;
+                border-radius: 10px;
+                font-size: 0.88rem;
+                font-weight: 500;
+                opacity: 0;
+                transition: opacity 0.3s, transform 0.3s;
+                pointer-events: none;
+                z-index: 999;
+                white-space: nowrap;
+            }
+            .toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+            .toast.error   { background: #dc2626; }
+        </style>
     </head>
     <body>
+        <!-- Auth guard -->
+        <script>
+            if (!localStorage.getItem('token')) window.location.href = 'login.html';
+        </script>
         <div class="container">
             <!--SIDEBAR-->
             <aside class="sidebar">
@@ -23,6 +87,7 @@
             <!--MAIN CONTENT-->
             <main class="main">
                 <h1 style="text-align:center;">📰 Health Articles</h1>
+                <p class="section-sub" style="text-align:center;">Stay informed with the latest in health and wellness.</p>
 
                 <div class="filters" style="text-align: center;">
                     <button onclick="loadArticles('mental health')" class="article-btn">Mental Health</button>
@@ -32,6 +97,8 @@
                     <button onclick="loadArticles('weight loss')" class="article-btn">Weight Loss</button>
                     <button onclick="loadArticles('productivity')" class="article-btn">Productivity</button>
                     <button onclick="loadArticles('sleep')" class="article-btn">Sleep</button>
+                    <button onclick="loadArticles('diet plan')" class="article-btn">Diet Plan</button>
+                    <button onclick="loadArticles('recent health issues')" class="article-btn">Recent Health Issues</button>
                 </div><br><br>
 
                 <div id="articlesList" class="articles-grid"></div>
@@ -40,5 +107,13 @@
     </body>
 
     <script src="../js/articles.js"></script>
+    <script>
+            function logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('streak_checked_today');
+                localStorage.removeItem('daily_tasks');
+                window.location.href = 'login.html';
+            }
+        </script>
 
 </html>

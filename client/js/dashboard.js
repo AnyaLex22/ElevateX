@@ -1,4 +1,12 @@
-const API_URL = "http://localhost:5000/api/progress";
+// ============================================================
+//  Elevate X — dashboard.js
+//  Source of truth: MongoDB via /api/logs
+//  localStorage role: session-level UI cache only
+//    - streak_checked_today  → prevents double check-in within the same session
+//    - daily_tasks           → today's task state cache (re-synced from API on load)
+// ============================================================
+
+const API_URL = "http://localhost:5000";
 
 //Get token from localStorage (store it after login)
 const token = localStorage.getItem("token");
@@ -6,6 +14,11 @@ const token = localStorage.getItem("token");
 if (!token) {
     window.location.href = "login.html";
 }
+
+const authHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+};
 
 //GREETING
 function setGreeting() {
@@ -24,14 +37,21 @@ function setGreeting() {
 //LOGOUT
 function logout() {
     localStorage.removeItem("token"); //Remove session
+    localStorage.removeItem("streak_checked_today");
+    localStorage.removeItem("daily_tasks");
     window.location.href = "login.html";
+}
+
+//DATE HELPER
+function todayStr(){
+    return new Date().toISOString().split("T")[0]; //YYYY-MM-DD
 }
 
 //FETCH PROGRESS
 async function fetchProgress() {
-    const res = await fetch (API_URL, {
+    const res = await fetch (`${API_URL}/api/progress`, {
         headers: {
-            "Authorization": "Bearer " + token
+            "Authorization": `Bearer ${token}`
         }
     });
 
@@ -194,84 +214,112 @@ function createCharts(data) {
 //   streak_count      – number of consecutive days
 //   streak_last_date  – "YYYY-MM-DD" of last check-in
 //   streak_checked_today – "YYYY-MM-DD" if already checked in today
+//   source of truth: MongoDB /api/logs/streak
+//   localStorage: session cache only (streak_checked_today)
+
  
-function todayStr() {
-    return new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+async function fetchStreak() {
+    const res = await fetch(`${API_URL}/api/logs/streak`, {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    return await res.json(); // { streak, lastCheckinDate, checkedInToday }
 }
  
-function yesterdayStr() {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().split("T")[0];
-}
+async function renderStreak() {
+    const { streak, checkedInToday } = await fetchStreak();
  
-function loadStreak() {
-    const count        = parseInt(localStorage.getItem("streak_count") || "0", 10);
-    const lastDate     = localStorage.getItem("streak_last_date") || "";
-    const checkedToday = localStorage.getItem("streak_checked_today") || "";
-    const today        = todayStr();
- 
-    // If last check-in was before yesterday → streak broken
-    if (lastDate && lastDate !== today && lastDate !== yesterdayStr()) {
-        localStorage.setItem("streak_count", "0");
-        localStorage.setItem("streak_last_date", "");
-        localStorage.removeItem("streak_checked_today");
-        return { count: 0, checkedToday: false };
-    }
- 
-    return { count, checkedToday: checkedToday === today };
-}
- 
-function renderStreak() {
-    const { count, checkedToday } = loadStreak();
     const btn = document.getElementById("checkinBtn");
     const msg = document.getElementById("streakMsg");
  
     document.getElementById("streakCount").textContent =
-        count > 0 ? `${count} day${count > 1 ? "s" : ""}` : "0 days";
+        streak > 0 ? `${streak} day${streak > 1 ? "s" : ""}` : "0 days";
  
-    if (checkedToday) {
-        btn.textContent  = "✓ Checked in!";
-        btn.disabled     = true;
+    // localStorage acts as a same-session guard so the button locks
+    // immediately after clicking without waiting for another API round-trip
+    const sessionChecked = localStorage.getItem("streak_checked_today") === todayStr();
+    const locked = checkedInToday || sessionChecked;
+ 
+    if (locked) {
+        btn.textContent = "✓ Checked in!";
+        btn.disabled    = true;
         btn.classList.add("checked");
-        msg.textContent  = "Great job! See you tomorrow 🎉";
+        msg.textContent = "Great job! See you tomorrow 🎉";
     } else {
-        btn.textContent  = "Check In Today";
-        btn.disabled     = false;
+        btn.textContent = "Check In Today";
+        btn.disabled    = false;
         btn.classList.remove("checked");
-        msg.textContent  = count > 0
-            ? `Don't break your ${count}-day streak!`
+        msg.textContent = streak > 0
+            ? `Don't break your ${streak}-day streak!`
             : "Start your streak today!";
     }
 }
  
-function handleCheckin() {
-    const today    = todayStr();
-    const { count } = loadStreak();
-    const lastDate = localStorage.getItem("streak_last_date") || "";
+async function handleCheckin() {
+    // Session guard — prevent double-click before API responds
+    if (localStorage.getItem("streak_checked_today") === todayStr()) return;
+    localStorage.setItem("streak_checked_today", todayStr());
  
-    // Don't double-count if somehow called twice
-    if (localStorage.getItem("streak_checked_today") === today) return;
+    // Optimistically lock the button
+    const btn = document.getElementById("checkinBtn");
+    btn.textContent = "✓ Checked in!";
+    btn.disabled    = true;
+    btn.classList.add("checked");
+    document.getElementById("streakMsg").textContent = "Saving...";
  
-    const newCount = (lastDate === yesterdayStr() || lastDate === today)
-        ? count + 1
-        : 1;  // fresh start or first ever
- 
-    localStorage.setItem("streak_count", String(newCount));
-    localStorage.setItem("streak_last_date", today);
-    localStorage.setItem("streak_checked_today", today);
- 
-    // Save check-in log for progress tracking page
-    saveDailyLog("checkin", { checked: true });
- 
-    renderStreak();
+    try {
+        await saveLog("checkin", { checkinData: { checked: true } });
+        await renderStreak(); // re-fetch real streak count from DB
+    } catch (err) {
+        console.error("Check-in failed:", err);
+        localStorage.removeItem("streak_checked_today"); // roll back
+        await renderStreak();
+    }
 }
  
 // ─── DAILY TASKS ─────────────────────────────────────────────
 //
 // Stored in localStorage as JSON:
 //   daily_tasks – { date: "YYYY-MM-DD", workout: {...}, water: {...}, mindfulness: {...} }
+//source of truth: MongoDB /api/logs
+//                  localStorage: today's task cache (daily_tasks)
+//                  Re-synced from API on every page load.
  
+// Save a log entry to MongoDB
+async function saveLog(type, dataPayload) {
+    const res = await fetch(`${API_URL}/api/logs`, {
+        method:  "POST",
+        headers: authHeaders,
+        body:    JSON.stringify({ type, date: todayStr(), ...dataPayload })
+    });
+    if (!res.ok) throw new Error(`Failed to save log: ${type}`);
+    return await res.json();
+}
+ 
+// Fetch today's logs from MongoDB and rebuild the local task cache
+async function syncTasksFromDB() {
+    const res  = await fetch(`${API_URL}/api/logs/today`, {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    const logs = await res.json(); // array of DailyLog documents for today
+ 
+    const tasks = {
+        date:        todayStr(),
+        workout:     { done: null },
+        water:       { glasses: 0, done: false },
+        mindfulness: { done: null }
+    };
+ 
+    logs.forEach(log => {
+        if (log.type === "workout"     && log.workoutData)     tasks.workout     = log.workoutData;
+        if (log.type === "water"       && log.waterData)       tasks.water       = log.waterData;
+        if (log.type === "mindfulness" && log.mindfulnessData) tasks.mindfulness = log.mindfulnessData;
+    });
+ 
+    // Write back to localStorage as a session cache
+    localStorage.setItem("daily_tasks", JSON.stringify(tasks));
+    return tasks;
+}
+//Read tasks from localStorage session cache (instant, no API wait)
 function loadTasks() {
     const today   = todayStr();
     const raw     = localStorage.getItem("daily_tasks");
@@ -279,14 +327,12 @@ function loadTasks() {
  
     // Reset if stored for a different day
     if (!stored || stored.date !== today) {
-        const fresh = {
+        return{
             date: today,
             workout:     { done: null },
             water:       { glasses: 0, done: false },
             mindfulness: { done: null }
         };
-        localStorage.setItem("daily_tasks", JSON.stringify(fresh));
-        return fresh;
     }
  
     return stored;
@@ -296,6 +342,7 @@ function saveTasks(tasks) {
     localStorage.setItem("daily_tasks", JSON.stringify(tasks));
 }
  
+//TASK RENDERING
 function renderTasks(tasks) {
     renderWorkoutTask(tasks.workout);
     renderWaterTask(tasks.water);

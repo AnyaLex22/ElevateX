@@ -28,3 +28,110 @@ button {
     border: none;
     cursor: pointer;
 }
+
+/* ── Password Requirements ── */
+            .password-rules {
+                margin: 8px 0 4px;
+                padding: 12px 14px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                list-style: none;
+                display: none; /* shown when password field is focused */
+            }
+ 
+            .password-rules.visible {
+                display: block;
+            }
+ 
+            .password-rules li {
+                font-size: 0.78rem;
+                padding: 3px 0;
+                color: #94a3b8;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                transition: color 0.2s;
+            }
+ 
+            .password-rules li::before {
+                content: '○';
+                font-size: 0.7rem;
+                flex-shrink: 0;
+                transition: all 0.2s;
+            }
+ 
+            .password-rules li.pass {
+                color: #16a34a;
+            }
+ 
+            .password-rules li.pass::before {
+                content: '✓';
+                color: #16a34a;
+            }
+ 
+            .password-rules li.fail {
+                color: #dc2626;
+            }
+ 
+            .password-rules li.fail::before {
+                content: '✗';
+                color: #dc2626;
+            }
+ 
+            /* ── Match indicator ── */
+            .match-msg {
+                font-size: 0.78rem;
+                margin-top: 5px;
+                height: 16px;
+                transition: color 0.2s;
+            }
+ 
+            .match-msg.ok  { color: #16a34a; }
+            .match-msg.bad { color: #dc2626; }
+ 
+            /* ── Toast ── */
+            .toast {
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: #1e293b;
+                color: #fff;
+                padding: 12px 22px;
+                border-radius: 10px;
+                font-size: 0.88rem;
+                font-weight: 500;
+                opacity: 0;
+                transition: opacity 0.3s, transform 0.3s;
+                pointer-events: none;
+                z-index: 999;
+                white-space: nowrap;
+            }
+ 
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+ 
+            .toast.success { background: #16a34a; }
+            .toast.error   { background: #dc2626; }
+ 
+            /* ── Loading spinner on button ── */
+            button.loading {
+                opacity: 0.75;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+ 
+            /* ── Input error border ── */
+            input.input-error {
+                border-color: #f87171 !important;
+            }
+ 
+            .field-err {
+                font-size: 0.75rem;
+                color: #dc2626;
+                margin-top: 3px;
+                min-height: 14px;
+            }

@@ -7,6 +7,11 @@
         <link rel="stylesheet" href="../css/dashboard.css">
     </head>
     <body>
+         <!-- Auth guard: redirect if no token -->
+        <script>
+            if (!localStorage.getItem('token')) window.location.href = 'login.html';
+        </script>
+        
         <div class="container">
             <!--SIDEBAR-->
             <aside class="sidebar">
@@ -43,21 +48,59 @@
                     <button type="submit">Add Progress</button>
                 </form>
 
-                <h2 style="text-align: center;">Past Progresses</h2>
-                <table>
-                    <thead>
-                        <tr>
-                        <th>Date</th>
-                        <th>Workout Type</th>
-                        <th>Calories Burned</th>
-                        <th>Current Weight (KG)</th>
-                        <th>Duration (min)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="progressTableBody">
-                        <!--Progress entries will be shown here-->
-                    </tbody>
-                </table>
+                <section class=log-section>
+                    <h2 class="section-title">🏋️ Workout Progress History</h2>
+                    <p class="section-sub">All logged workouts, sorted most recent first.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                            <th>Date</th>
+                            <th>Workout Type</th>
+                            <th>Calories Burned</th>
+                            <th>Current Weight (KG)</th>
+                            <th>Duration (min)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="progressTableBody">
+                            <!--Progress entries will be shown here-->
+                        </tbody>
+                    </table>
+                </section>
+
+                <!--DAILY TASK LOGS-->
+                <section class="log-section">
+                    <h2 class="section-title">📅 Daily Task Logs</h2>
+                    <p class="section-sub">Your past daily habits - workout check-ins, water intake, and mindfulness.</p>
+
+                    <!--Filter Controls-->
+                    <div class="log-filters">
+                        <button class="filter-btn active" onclick="filterLogs('all', this)">All</button>
+                        <button class="filter-btn" onclick="filterLogs('workout', this)">🏋️ Workout</button>
+                        <button class="filter-btn" onclick="filterLogs('water', this)">💧 Water</button>
+                        <button class="filter-btn" onclick="filterLogs('mindfulness', this)">🧘 Mindfulness</button>
+                        <button class="filter-btn" onclick="filterLogs('checkin', this)">🔥 Check-in</button>
+                    </div>
+
+                    <table id="taskLogsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Task</th>
+                                <th>Status / Detail</th>
+                                <th>Logged At</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="taskLogsBody">
+                            <!--Populated by progress-->
+                        </tbody>
+                    </table>
+
+                    <p class="no-logs-msg" id="noLogsMsg" style="display:none;">
+                        No task logs found. Commplete daily tasks on the dashboard to see them here.
+                    </p>
+                </section>
+                
             </main>
         </div>
     </body>

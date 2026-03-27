@@ -545,6 +545,316 @@ button[type="submit"]:hover {
     background: #0ea5e9;
 }
 
+ /* ── Email row with change-password button ── */
+            .email-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+ 
+            .email-row input {
+                flex: 1;
+                background: #f1f5f9;
+                color: #64748b;
+                cursor: not-allowed;
+            }
+ 
+            .btn-change-pwd {
+                padding: 10px 14px;
+                background: #0f172a;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.8rem;
+                font-weight: 600;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: background 0.15s;
+                flex-shrink: 0;
+            }
+ 
+            .btn-change-pwd:hover { background: #1e3a5f; }
+ 
+            /* ── Password Modal ── */
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.45);
+                z-index: 200;
+                align-items: center;
+                justify-content: center;
+            }
+ 
+            .modal-overlay.open { display: flex; }
+ 
+            .modal {
+                background: #fff;
+                border-radius: 14px;
+                padding: 32px 28px;
+                width: 100%;
+                max-width: 420px;
+                box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+                position: relative;
+                animation: slideUp 0.25s ease;
+            }
+ 
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to   { transform: translateY(0);    opacity: 1; }
+            }
+ 
+            .modal h3 {
+                font-family: 'Syne', sans-serif;
+                font-size: 1.1rem;
+                margin-bottom: 20px;
+                color: #1e293b;
+            }
+ 
+            .modal label {
+                display: block;
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                margin: 14px 0 5px;
+            }
+ 
+            .modal input {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                outline: none;
+                transition: border-color 0.15s;
+                box-sizing: border-box;
+            }
+ 
+            .modal input:focus { border-color: #38bdf8; }
+ 
+            .modal-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 22px;
+            }
+ 
+            .btn-cancel {
+                flex: 1;
+                padding: 11px;
+                background: #f1f5f9;
+                color: #64748b;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.88rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+ 
+            .btn-cancel:hover { background: #e2e8f0; }
+ 
+            .btn-save-pwd {
+                flex: 2;
+                padding: 11px;
+                background: #38bdf8;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                font-family: 'Syne', sans-serif;
+                font-size: 0.88rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+ 
+            .btn-save-pwd:hover { background: #0ea5e9; }
+ 
+            .btn-save-pwd.loading,
+            .btn-save-pwd:disabled {
+                opacity: 0.65;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+ 
+            /* ── Password rules in modal ── */
+            .pwd-rules {
+                list-style: none;
+                margin: 8px 0 4px;
+                padding: 10px 12px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                display: none;
+            }
+ 
+            .pwd-rules.visible { display: block; }
+ 
+            .pwd-rules li {
+                font-size: 0.76rem;
+                padding: 2px 0;
+                color: #94a3b8;
+                display: flex;
+                gap: 7px;
+                align-items: center;
+            }
+ 
+            .pwd-rules li::before { content: '○'; font-size: 0.65rem; }
+            .pwd-rules li.pass    { color: #16a34a; }
+            .pwd-rules li.pass::before { content: '✓'; }
+            .pwd-rules li.fail    { color: #dc2626; }
+            .pwd-rules li.fail::before { content: '✗'; }
+ 
+            /* ── Toast ── */
+            .toast {
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: #1e293b;
+                color: #fff;
+                padding: 12px 24px;
+                border-radius: 10px;
+                font-size: 0.88rem;
+                font-weight: 500;
+                opacity: 0;
+                transition: opacity 0.3s, transform 0.3s;
+                pointer-events: none;
+                z-index: 999;
+                white-space: nowrap;
+            }
+ 
+            .toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+            .toast.success { background: #16a34a; }
+            .toast.error   { background: #dc2626; }
+ 
+            /* ── Skeleton loader ── */
+            .skeleton {
+                background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+                background-size: 200% 100%;
+                animation: shimmer 1.2s infinite;
+                border-radius: 8px;
+                height: 40px;
+            }
+ 
+            @keyframes shimmer {
+                0%   { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+ 
+            /* ── Submit button loading state ── */
+            button[type="submit"].loading {
+                opacity: 0.7;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+ 
+            /* ── Modal error msg ── */
+            .modal-err {
+                font-size: 0.78rem;
+                color: #dc2626;
+                margin-top: 6px;
+                min-height: 16px;
+            }
+
+/* ── PROGRESS LOG SECTION ── */
+.log-section {
+    margin-bottom: 40px;
+}
+ 
+/* Filter buttons */
+.log-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+ 
+.filter-btn {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+ 
+.filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+ 
+.filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+ 
+/* Log status badges */
+.log-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+ 
+.log-badge.done {
+    background: #dcfce7;
+    color: #16a34a;
+}
+ 
+.log-badge.skipped {
+    background: #fee2e2;
+    color: #dc2626;
+}
+ 
+.log-badge.partial {
+    background: #fef9c3;
+    color: #a16207;
+}
+ 
+.log-badge.pending {
+    background: #f1f5f9;
+    color: var(--muted);
+}
+ 
+/* Water log inline bar */
+.water-log-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+ 
+.water-bar.mini {
+    width: 80px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+ 
+/* No logs message */
+.no-logs-msg {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    padding: 32px 0;
+}
+
 /*ARTICLES*/
 .articles-grid {
     display: grid;

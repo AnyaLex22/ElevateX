@@ -23,8 +23,8 @@ app.use('/api/profile', profileRoutes);
 const progressRoutes = require('./routes/progressRoutes');
 app.use('/api/progress', progressRoutes);
 
-const workoutRoutes = require('./routes/workoutRoutes');
-app.use('/api/workouts', workoutRoutes);
+const dailyLogRoutes = require('./routes/dailyLogRoutes');
+app.use('/api/logs', dailyLogRoutes);
 
 //Fetch NewsAPI
 app.get("/api/articles", async (req, res) => {
@@ -45,12 +45,13 @@ app.get("/api/articles", async (req, res) => {
     }
 });
 
-//START SERVER
-const PORT = process.env.PORT || 5000;
 
 //MONGODB
 const connectMongoDB = require('./config/db_mongo');
 connectMongoDB();
+
+//START SERVER
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`);
