@@ -6,7 +6,7 @@
 //    - daily_tasks           → today's task state cache (re-synced from API on load)
 // ============================================================
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://elevatex-pfo1.onrender.com";
 
 //Get token from localStorage (store it after login)
 const token = localStorage.getItem("token");

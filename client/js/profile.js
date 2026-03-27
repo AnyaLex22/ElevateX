@@ -4,7 +4,7 @@
 //  Change password via /api/profile/password
 // ============================================================
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://elevatex-pfo1.onrender.com';
 
 // ─── AUTH GUARD ──────────────────────────────────────────────
 const token = localStorage.getItem('token');

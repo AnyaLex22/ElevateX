@@ -4,7 +4,7 @@
 //  Daily task logs        → MongoDB /api/logs
 // ============================================================
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://elevatex-pfo1.onrender.com";
 const token = localStorage.getItem('token');
 
 // ─── AUTH GUARD ──────────────────────────────────────────────

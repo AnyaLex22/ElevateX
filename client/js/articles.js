@@ -23,7 +23,7 @@ async function loadArticles(topic = "health") {
     try {
         const token = localStorage.getItem('token');
         const res   = await fetch(
-            `http://localhost:5000/api/articles?topic=${encodeURIComponent(topic)}`,
+            `https://elevatex-pfo1.onrender.com/api/articles?topic=${encodeURIComponent(topic)}`,
             { headers: { Authorization: `Bearer ${token}` } }
         );
  
