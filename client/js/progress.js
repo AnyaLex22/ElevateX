@@ -246,15 +246,20 @@ async function loadTaskLogs() {
         const logs = await res.json();
 
         //Convert MongoDB format to what renderLogs expects
-        allLogs = logs.map(log => ({
-            date: log.date,
-            type: log.type,
-            timestamp: log.timestamp,
-            data: log.workoutData ||
-                log.waterData ||
-                log.mindfulnessData ||
-                log.checkinData || {}
-        }));
+        allLogs = logs.map(log => {
+            let data = {};
+            if(log.type === 'workout') data = log.workoutData || {};
+            if(log.type === 'water') data = log.waterData || {};
+            if(log.type === 'mindfulness') data = log.mindfulnessData || {};
+            if(log.type === 'checkin') data = log.checkinData || {};
+
+            return {
+                date: log.date;
+                type: log.type,
+                timestamp: log.timmestamp,
+                data
+            };
+        });
         renderLogs(allLogs);
     } catch (err) {
         console.error(err);

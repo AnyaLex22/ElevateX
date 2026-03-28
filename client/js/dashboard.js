@@ -407,7 +407,7 @@ function completeTask(taskName, value) {
         tasks.workout.done = value;
         saveTasks(tasks);
         renderWorkoutTask(tasks.workout);
-        ///saveDailyLog("workout", { done: value });
+        saveLog("workout", { workoutData: {done: value} });
     }
  
     if (taskName === "water") {
@@ -416,14 +416,14 @@ function completeTask(taskName, value) {
         tasks.water.done    = glasses >= 8;
         saveTasks(tasks);
         renderWaterTask(tasks.water);
-        //saveDailyLog("water", { glasses });
+        saveLog("water", { waterData: {glasses, done: tasks.water.done} });
     }
  
     if (taskName === "mindfulness") {
         tasks.mindfulness.done = value;
         saveTasks(tasks);
         renderMindfulnessTask(tasks.mindfulness);
-        //saveDailyLog("mindfulness", { done: value });
+        saveLog("mindfulness", { mindfulnessData: { done: value} });
     }
 }
  
