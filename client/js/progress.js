@@ -194,6 +194,8 @@ function formatLogDate(dateStr) {
 function formatLogTime(isoString) {
     if (!isoString) return '—';
     const d = new Date(isoString);
+    //Check if data is valid 
+    if(isNaN(d.getTime())) return '-';
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
  
@@ -256,7 +258,7 @@ async function loadTaskLogs() {
             return {
                 date: log.date,
                 type: log.type,
-                timestamp: log.timmestamp,
+                timestamp: log.timmestamp || log.createdAt || null, //<-Added fallback
                 data
             };
         });
