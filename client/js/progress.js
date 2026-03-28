@@ -254,7 +254,7 @@ async function loadTaskLogs() {
             if(log.type === 'checkin') data = log.checkinData || {};
 
             return {
-                date: log.date;
+                date: log.date,
                 type: log.type,
                 timestamp: log.timmestamp,
                 data
