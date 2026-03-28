@@ -1,4 +1,4 @@
-const API = "https://elevatex-pfo1.onrender.com/api/auth";
+const API = "https://elevatex-pfo1/api/auth.onrender.com";
 
 // ─── TOAST HELPER ────────────────────────────────────────────
 function showToast(message, type = 'success', duration = 3500) {
