@@ -407,7 +407,7 @@ function completeTask(taskName, value) {
         tasks.workout.done = value;
         saveTasks(tasks);
         renderWorkoutTask(tasks.workout);
-        saveDailyLog("workout", { done: value });
+        ///saveDailyLog("workout", { done: value });
     }
  
     if (taskName === "water") {
@@ -416,14 +416,14 @@ function completeTask(taskName, value) {
         tasks.water.done    = glasses >= 8;
         saveTasks(tasks);
         renderWaterTask(tasks.water);
-        saveDailyLog("water", { glasses });
+        //saveDailyLog("water", { glasses });
     }
  
     if (taskName === "mindfulness") {
         tasks.mindfulness.done = value;
         saveTasks(tasks);
         renderMindfulnessTask(tasks.mindfulness);
-        saveDailyLog("mindfulness", { done: value });
+        //saveDailyLog("mindfulness", { done: value });
     }
 }
  
@@ -433,17 +433,17 @@ function completeTask(taskName, value) {
 // Each entry: { date, type, data, timestamp }
 // The progress tracking page can read and display these.
  
-function saveDailyLog(type, data) {
-    const today = todayStr();
-    const raw   = localStorage.getItem("daily_logs");
-    const logs  = raw ? JSON.parse(raw) : [];
+//function saveDailyLog(type, data) {
+ //   const today = todayStr();
+ //   const raw   = localStorage.getItem("daily_logs");
+ //   const logs  = raw ? JSON.parse(raw) : [];
  
     // Remove old log of same type on same day (upsert)
-    const filtered = logs.filter(l => !(l.date === today && l.type === type));
-    filtered.push({ date: today, type, data, timestamp: new Date().toISOString() });
+ //   const filtered = logs.filter(l => !(l.date === today && l.type === type));
+ //   filtered.push({ date: today, type, data, timestamp: new Date().toISOString() });
  
-    localStorage.setItem("daily_logs", JSON.stringify(filtered));
-}
+ //   localStorage.setItem("daily_logs", JSON.stringify(filtered));
+//}
  
 // ─── INIT ────────────────────────────────────────────────────
 async function init() {
@@ -475,4 +475,5 @@ async function init() {
     }
 }
  
+localStorage.removeItem('daily_logs');
 init();

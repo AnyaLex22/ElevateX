@@ -228,10 +228,47 @@ function renderLogs(logs) {
  
 
 //FETCH FROM API
-function loadTaskLogs() {
-    const raw  = localStorage.getItem('daily_logs');
-    allLogs    = raw ? JSON.parse(raw) : [];
-    renderLogs(allLogs);
+async function loadTaskLogs() {
+    taskLogsBody.innerHTML = skeletonRows(4,3);
+
+    try {
+        const res = await fetch(`${API_URL}/api/logs`, {
+            headers: {Authorization: `Bearer ${token}`}
+        });
+
+        if (res.status === 401 || res.status === 403) { 
+            logout(); 
+            return;
+        }
+
+        if (!res.ok) throw new Error ('Failed to fetch logs');
+
+        const logs = await res.json();
+
+        //Convert MongoDB format to what renderLogs expects
+        allLogs = logs.map(log => ({
+            date: log.date,
+            type: log.type,
+            timestamp: log.timestamp,
+            data: log.workoutData ||
+                log.waterData ||
+                log.mindfulnessData ||
+                log.checkinData || {}
+        }));
+        renderLogs(allLogs);
+    } catch (err) {
+        console.error(err);
+        showToast('Could not load task logs.', 'error');
+        taskLogsBody.innerHTML = `
+            <tr><td colspan="4">
+                <div class="empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <h3>Failed to load logs</h3>
+                </div>
+                </td>
+            </tr>
+        `;
+    }
 }
  
 // ─── FILTER BUTTONS ──────────────────────────────────────────
