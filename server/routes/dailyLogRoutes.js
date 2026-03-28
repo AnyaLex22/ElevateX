@@ -35,27 +35,24 @@ router.post('/', auth, async (req, res) => {
 
     // Build the data payload for this type
     const dataField = {
-        workout:     { workoutData },
-        water:       { waterData },
-        mindfulness: { mindfulnessData },
-        checkin:     { checkinData }
+        workout:     workoutData ? { workoutData } : null,
+        water:       waterData ? { waterData } : null,
+        mindfulness: mindfulnessData ? { mindfulnessData } : null,
+        checkin:     checkinData ? { checkinData } : null,
     }[type];
 
-    if (!dataField) return res.status(400).json({ error: `Unknown type: ${type}` });
+    if (!dataField) return res.status(400).json({ error: `Unknown type or missing data: ${type}` });
 
     try {
         const log = await DailyLog.findOneAndUpdate(
             { userId: req.user.id, date: dateStr, type },           // filter
-            {
-                $set: { ...dataField, timestamp: new Date() },       // update
-                $setOnInsert: {timestamp: new Date()}
-            },
-            
+            {$set: { ...dataField, timestamp: new Date() }},       // update
             { upsert: true, new: true, setDefaultsOnInsert: true }   // options
         );
 
         res.json(log);
     } catch (err) {
+        console.error('DailyLog save error:', err.message); //<- shows exact error in Render logs
         res.status(500).json({ error: err.message });
     }
 });
