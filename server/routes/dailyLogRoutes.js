@@ -46,7 +46,11 @@ router.post('/', auth, async (req, res) => {
     try {
         const log = await DailyLog.findOneAndUpdate(
             { userId: req.user.id, date: dateStr, type },           // filter
-            { $set: { ...dataField, timestamp: new Date() } },       // update
+            {
+                $set: { ...dataField, timestamp: new Date() },       // update
+                $setOnInsert: {timestamp: new Date()}
+            },
+            
             { upsert: true, new: true, setDefaultsOnInsert: true }   // options
         );
 
